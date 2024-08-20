@@ -36,7 +36,7 @@ public class ScreenmatchApplication implements CommandLineRunner {
 		List<Season> seasons = new ArrayList<>();
 
 		for (int i = 1; i <= serie.totalSeasons(); i++) {
-			json = consumerAPI.getData("http://www.omdbapi.com/?t=supernatural&season=" + i + "&apikey=3bfc9137&");
+			json = consumerAPI.getData("http://www.omdbapi.com/?t=supernaturalgit&season=" + i + "&apikey=3bfc9137&");
 			Season season = convertData.getData(json, Season.class);
 			seasons.add(season);
 		}
