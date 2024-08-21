@@ -1,13 +1,13 @@
 package br.com.alura.screenmatch.main;
 
+import br.com.alura.screenmatch.model.Episode;
 import br.com.alura.screenmatch.model.Season;
 import br.com.alura.screenmatch.model.Serie;
 import br.com.alura.screenmatch.service.ConsumerAPI;
 import br.com.alura.screenmatch.service.ConvertsData;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Main {
     private static final String ADDRESS = "http://www.omdbapi.com/?t=";
@@ -36,5 +36,19 @@ public class Main {
             seasons.add(season);
         }
         seasons.forEach(System.out::println);
+
+        seasons.forEach(s -> s.episodes().forEach(e -> System.out.println(e.title())));
+
+        List<Episode> episodes = seasons.stream()
+                .flatMap(s -> s.episodes().stream())
+                .toList();
+
+        System.out.println("\nTop 5 episódios!");
+        episodes.stream()
+                .filter(e -> !e.imdbRating().equalsIgnoreCase("N/A"))
+                .sorted(Comparator.comparing(Episode::imdbRating)
+                .reversed())
+                .limit(5)
+                .forEach(System.out::println);
     }
 }
