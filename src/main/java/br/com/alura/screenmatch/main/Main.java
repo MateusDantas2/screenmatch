@@ -1,15 +1,11 @@
 package br.com.alura.screenmatch.main;
 
-import br.com.alura.screenmatch.domain.entity.Episode;
-import br.com.alura.screenmatch.domain.model.EpisodeDTO;
+import br.com.alura.screenmatch.domain.entity.Serie;
 import br.com.alura.screenmatch.domain.model.SeasonDTO;
 import br.com.alura.screenmatch.domain.model.SerieDTO;
 import br.com.alura.screenmatch.service.ConsumerAPI;
 import br.com.alura.screenmatch.service.ConvertsData;
 
-import java.text.DateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -24,60 +20,75 @@ public class Main {
     private ConsumerAPI consumerAPI = new ConsumerAPI();
     private ConvertsData convertData = new ConvertsData();
     private Scanner scanner = new Scanner(System.in);
-
+    private List<SerieDTO> dataSeries = new ArrayList<>();
 
     public void showMenu() {
-        System.out.println("Digite o nome da série que deseja: ");
+        var option = -1;
+        while (option != 0) {
+            var menu = """
+                    1 - Buscar séries
+                    2 - Buscar episódios
+                    3 - Listar séries buscadas
+                    
+                    0 - Sair                                 
+                    """;
 
-        String seriesName = scanner.nextLine();
-        String json = consumerAPI.getData(ADDRESS + seriesName.replace(" ", "+") + API_KEY);
-        SerieDTO serieDTO = convertData.getData(json, SerieDTO.class);
-        System.out.println(serieDTO);
+            System.out.println(menu);
+            option = scanner.nextInt();
+            scanner.nextLine();
 
-        List<SeasonDTO> seasonDTOS = new ArrayList<>();
-        for (int i = 1; i <= serieDTO.totalSeasons(); i++) {
-            json = consumerAPI.getData(
-                    ADDRESS + seriesName.replace(" ", "+") + SEASON + i + API_KEY
-            );
-            SeasonDTO seasonDTO = convertData.getData(json, SeasonDTO.class);
-            seasonDTOS.add(seasonDTO);
+            switch (option) {
+                case 1:
+                    findWebSeries();
+                    break;
+                case 2:
+                    findEpisodeBySeries();
+                    break;
+                case 3:
+                    listSearchedSeries();
+                    break;
+                case 0:
+                    System.out.println("Saindo...");
+                    break;
+                default:
+                    System.out.println("Opção inválida");
+            }
         }
-        seasonDTOS.forEach(System.out::println);
+    }
 
-        seasonDTOS.forEach(s -> s.episodeDTOS().forEach(e -> System.out.println(e.title())));
+    private void findWebSeries() {
+        SerieDTO data = getDataSeries();
+        dataSeries.add(data);
+        System.out.println(data);
+    }
 
-        List<EpisodeDTO> episodeDTOS = seasonDTOS.stream()
-                .flatMap(s -> s.episodeDTOS().stream())
+    private SerieDTO getDataSeries() {
+        System.out.println("Digite o nome da série para busca");
+        var seriesName = scanner.nextLine();
+        var json = consumerAPI.getData(ADDRESS + seriesName.replace(" ", "+") + API_KEY);
+        return convertData.getData(json, SerieDTO.class);
+    }
+
+    private void findEpisodeBySeries() {
+        SerieDTO seriesData = getDataSeries();
+        List<SeasonDTO> seasons = new ArrayList<>();
+
+        for (int i = 1; i <= seriesData.totalTemporadas(); i++) {
+            var json = consumerAPI.getData(ADDRESS + seriesData.titulo().replace(" ", "+") + SEASON + i + API_KEY);
+            SeasonDTO dataSeasons = convertData.getData(json, SeasonDTO.class);
+            seasons.add(dataSeasons);
+        }
+        seasons.forEach(System.out::println);
+    }
+
+    private void listSearchedSeries() {
+        List<Serie> series;
+        series = dataSeries.stream()
+                .map(Serie::new)
                 .toList();
-
-        System.out.println("\nTop 5 episódios!");
-        episodeDTOS.stream()
-                .filter(e -> !e.imdbRating().equalsIgnoreCase("N/A"))
-                .sorted(Comparator.comparing(EpisodeDTO::imdbRating)
-                        .reversed())
-                .limit(5)
+        series.stream()
+                .sorted(Comparator.comparing(Serie::getGenero))
                 .forEach(System.out::println);
-
-        List<Episode> episodes = seasonDTOS.stream()
-                .flatMap(t -> t.episodeDTOS().stream()
-                        .map(d -> new Episode(t.seasonNumber(), d))
-                ).toList();
-
-        episodes.forEach(System.out::println);
-
-        System.out.println("A partir de que ano você quer visualizar os episódios? ");
-        int year = scanner.nextInt();
-        scanner.nextInt();
-
-        LocalDate searchDate = LocalDate.of(year, 1, 1);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-        episodes.stream()
-                .filter(e -> e.getReleaseDate() != LocalDate.MIN && e.getReleaseDate().isAfter(searchDate))
-                .forEach(e -> System.out.println(
-                        "Temporada: " + e.getSeasonNumber() +
-                                " - Episódio: " + e.getTitle() +
-                                " - Data Lançamento: " + e.getReleaseDate().format(formatter)
-                ));
+        dataSeries.forEach(System.out::println);
     }
 }
