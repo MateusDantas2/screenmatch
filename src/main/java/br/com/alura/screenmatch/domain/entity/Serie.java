@@ -2,6 +2,7 @@ package br.com.alura.screenmatch.domain.entity;
 
 import br.com.alura.screenmatch.domain.enumaration.Category;
 import br.com.alura.screenmatch.domain.model.SerieDTO;
+import br.com.alura.screenmatch.service.ConsultationMyMemory;
 import lombok.Data;
 
 import java.util.OptionalDouble;
@@ -26,18 +27,18 @@ public class Serie {
         this.genero = String.valueOf(Category.fromString(serieDTO.genero().split(",")[0])).trim();
         this.atores = serieDTO.atores();
         this.poster = serieDTO.poster();
-        this.sinopse = serieDTO.sinopse();
+        this.sinopse = ConsultationMyMemory.getTranslation(serieDTO.sinopse()).trim();
     }
 
     @Override
     public String toString() {
         return
                 "genero='" + genero + '\'' +
-                "titulo='" + titulo + '\'' +
-                ", totalTemporadas=" + totalTemporadas +
-                ", avaliacao=" + avaliacao +
-                ", atores='" + atores + '\'' +
-                ", poster='" + poster + '\'' +
-                ", sinopse='" + sinopse + '\'';
+                        "titulo='" + titulo + '\'' +
+                        ", totalTemporadas=" + totalTemporadas +
+                        ", avaliacao=" + avaliacao +
+                        ", atores='" + atores + '\'' +
+                        ", poster='" + poster + '\'' +
+                        ", sinopse='" + sinopse + '\'';
     }
 }
