@@ -1,6 +1,6 @@
 package br.com.alura.screenmatch.service;
 
-import br.com.alura.screenmatch.model.api.TranslationData;
+import br.com.alura.screenmatch.domain.model.api.TranslationData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
