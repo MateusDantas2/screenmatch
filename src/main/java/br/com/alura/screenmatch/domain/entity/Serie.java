@@ -14,7 +14,8 @@ import java.util.OptionalDouble;
 
 import static jakarta.persistence.CascadeType.ALL;
 
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @Entity
 @Table(name = "series")
@@ -30,10 +31,10 @@ public class Serie {
     private String atores;
     private String poster;
     private String sinopse;
-    @OneToMany(mappedBy = "serie", cascade = ALL)
+    @OneToMany(mappedBy = "serie", cascade = ALL, fetch = FetchType.EAGER)
     private List<Episodio> episodios = new ArrayList<>();
 
-    public Serie(DadosSerie dadosSerie){
+    public Serie(DadosSerie dadosSerie) {
         this.titulo = dadosSerie.titulo();
         this.totalTemporadas = dadosSerie.totalTemporadas();
         this.avaliacao = OptionalDouble.of(Double.parseDouble(dadosSerie.avaliacao())).orElse(0);
@@ -41,6 +42,11 @@ public class Serie {
         this.atores = dadosSerie.atores();
         this.poster = dadosSerie.poster();
         this.sinopse = ConsultationMyMemory.getTranslation(dadosSerie.sinopse()).trim();
+    }
+
+    public void setEpisodios(List<Episodio> episodios) {
+        episodios.forEach(e -> e.setSerie(this));
+        this.episodios = episodios;
     }
 
     @Override
@@ -53,6 +59,7 @@ public class Serie {
 
                         ", atores='" + atores + '\'' +
                         ", poster='" + poster + '\'' +
-                        ", sinopse='" + sinopse + '\'';
+                        ", sinopse='" + sinopse + '\'' +
+                        ", episodios='" + episodios + '\'';
     }
 }

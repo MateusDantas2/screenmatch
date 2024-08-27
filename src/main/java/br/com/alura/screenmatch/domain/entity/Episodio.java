@@ -23,7 +23,7 @@ public class Episodio {
     private Double avaliacao;
     private LocalDate dataLancamento;
     @ManyToOne
-    @JoinColumn()
+    @JoinColumn(name = "idSerie")
     private Serie serie;
 
     public Episodio(Integer numeroTemporada, DadosEpisodio dadosEpisodio) {
