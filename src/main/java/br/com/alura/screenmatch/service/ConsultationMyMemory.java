@@ -1,28 +1,25 @@
 package br.com.alura.screenmatch.service;
 
-import br.com.alura.screenmatch.domain.model.api.TranslationData;
+import br.com.alura.screenmatch.model.api.TranslationData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.net.URLEncoder;
 
-/**
- * @author Mateus Dantas
- */
 public class ConsultationMyMemory {
     private static final String URL = "https://api.mymemory.translated.net/get?q=";
     private static final String URL_ADDON = "&langpair=";
 
     public static String getTranslation(String text) {
         ObjectMapper mapper = new ObjectMapper();
-        ConsumerAPI consumer = new ConsumerAPI();
+        ConsumoApi consumer = new ConsumoApi();
 
         String textSend = URLEncoder.encode(text);
         String langpair = URLEncoder.encode("en|pt-br");
 
         String url = URL + textSend + URL_ADDON + langpair;
 
-        String json = consumer.getData(url);
+        String json = consumer.obterDados(url);
 
         TranslationData translationData;
         try {

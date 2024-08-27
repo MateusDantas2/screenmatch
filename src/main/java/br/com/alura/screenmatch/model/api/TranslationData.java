@@ -1,4 +1,4 @@
-package br.com.alura.screenmatch.domain.model.api;
+package br.com.alura.screenmatch.model.api;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
