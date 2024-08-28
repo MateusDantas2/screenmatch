@@ -1,6 +1,6 @@
 package br.com.alura.screenmatch.domain.entity;
 
-import br.com.alura.screenmatch.domain.model.Categoria;
+import br.com.alura.screenmatch.enumeration.Categoria;
 import br.com.alura.screenmatch.domain.model.DadosSerie;
 import br.com.alura.screenmatch.service.ConsultationMyMemory;
 import jakarta.persistence.*;

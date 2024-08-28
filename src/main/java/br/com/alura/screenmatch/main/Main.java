@@ -5,6 +5,7 @@ import br.com.alura.screenmatch.domain.entity.Serie;
 import br.com.alura.screenmatch.domain.model.DadosSerie;
 import br.com.alura.screenmatch.domain.model.DadosTemporada;
 import br.com.alura.screenmatch.domain.repository.SerieRepository;
+import br.com.alura.screenmatch.enumeration.Categoria;
 import br.com.alura.screenmatch.service.ConsumoApi;
 import br.com.alura.screenmatch.service.ConverteDados;
 
@@ -35,6 +36,8 @@ public class Main {
                     4 - Buscar série por título
                     5 - Buscar séries por ator
                     6 - Top 5 Séries
+                    7 - Buscar séries por categoria
+                    8 - Filtrar séries
                     
                     0 - Sair                                 
                     """;
@@ -61,6 +64,12 @@ public class Main {
                     break;
                 case 6:
                     buscarTop5Series();
+                    break;
+                case 7:
+                    buscarSeriesPorCategoria();
+                    break;
+                case 8:
+                    filtrarSeriesPorTemporadaEAvaliacao();
                     break;
                 case 0:
                     System.out.println("Saindo...");
@@ -151,5 +160,26 @@ public class Main {
         serieTop.forEach(s ->
                 System.out.println(s.getTitulo() + " avaliação: " + s.getAvaliacao())
         );
+    }
+
+    private void buscarSeriesPorCategoria() {
+        System.out.println("Dejesa buscar séries de que categoria/gênero? ");
+        String nomeGenero = leitura.nextLine();
+        Categoria categoria = Categoria.fromPortugues(nomeGenero);
+        List<Serie> seriesCategoria = repositorio.findByGenero(categoria);
+        System.out.println("Séries da categoria " + nomeGenero);
+        seriesCategoria.forEach(System.out::println);
+    }
+
+    private void filtrarSeriesPorTemporadaEAvaliacao() {
+        System.out.println("Deseja filtrar séries até quantas temporadas? ");
+        Integer totalTemporadas = leitura.nextInt();
+        leitura.nextLine();
+        System.out.println("Com avaliação a partir de que valor? ");
+        Double avaliacao = leitura.nextDouble();
+        leitura.nextLine();
+        List<Serie> seriesFiltros = repositorio.seriesPorTemporadaEAvaliacao(totalTemporadas, avaliacao);
+        System.out.println("*** Séries filtradas ***");
+        seriesFiltros.forEach(s -> System.out.println(s.getTitulo() + " - avaliação: " + s.getAvaliacao()));
     }
 }
